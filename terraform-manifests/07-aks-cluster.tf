@@ -16,7 +16,6 @@ resource "azurerm_kubernetes_cluster" "aks-cluster" {
     min_count               = 1
     os_disk_size_gb         = 30
     type                    = "VirtualMachineScaleSets"
-    vnet_subnet_id          = azurerm_subnet.aks-default.id 
     node_labels = {
       "nodepool-type"       = "system"
       "environment"         = "dev"
