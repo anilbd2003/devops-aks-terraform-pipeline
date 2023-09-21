@@ -73,13 +73,13 @@ stages:
                 command: 'plan'
                 workingDirectory: '$(Pipeline.Workspace)/published-artifacts'
                 environmentServiceName: 'azuredevops-azureRM-svc'
-                commandOptions: '-var ssh_public_key=$(sshkey.secureFilePath) -out $(Pipeline.Workspace)/terraform-manifests-out/$(DEV_ENVIRONMENT)-$(Build.BuildId).out -var environment=$(DEV_ENVIRONMENT)'
+                commandOptions: '-var ssh_public_key=$(sshkey.secureFilePath) -out $(Pipeline.Workspace)/published-artifacts/$(DEV_ENVIRONMENT)-$(Build.BuildId).out -var environment=$(DEV_ENVIRONMENT)'
                 allowTelemetryCollection: false
             - task: TerraformCLI@0
               inputs:
                 command: 'apply'
                 workingDirectory: '$(Pipeline.Workspace)/published-artifacts'
                 environmentServiceName: 'azuredevops-azureRM-svc'
-                commandOptions: '$(Pipeline.Workspace)/terraform-manifests-out/$(DEV_ENVIRONMENT)-$(Build.BuildId).out'
+                commandOptions: '$(Pipeline.Workspace)published-artifacts/$(DEV_ENVIRONMENT)-$(Build.BuildId).out'
                 allowTelemetryCollection: false
             
