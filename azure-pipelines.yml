@@ -42,4 +42,44 @@ stages:
              command: 'validate'
              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-manifests'
              allowTelemetryCollection: false
-
+  - stage: DeployAKSClusters
+    jobs:
+    - deployment: DeployDevAKSCluster
+      displayName: DeployDevAKSCluster
+      pool:
+        vmImage: 'ubuntu-latest'
+      environment: $(DEV_ENVIRONMENT)      
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - task: DownloadSecureFile@1
+              name: sshkey
+              inputs:
+                secureFile: 'aks-terraform-devops-ssh-key-ububtu.pub'
+            - task: TerraformCLI@0
+              inputs:
+                command: 'init'
+                workingDirectory: '$(Pipeline.Workspace)/published-artifacts'
+                backendType: 'azurerm'
+                backendServiceArm: 'azuredevops-azureRM-svc'
+                backendAzureRmResourceGroupName: 'aks-rg-sa'
+                backendAzureRmStorageAccountName: 'terraformstatefileaccoun'
+                backendAzureRmContainerName: 'tfstate'
+                backendAzureRmKey: 'aks-$(DEV_ENVIRONMENT).tfstate'
+                allowTelemetryCollection: false
+            - task: TerraformCLI@0
+              inputs:
+                command: 'plan'
+                workingDirectory: '$(Pipeline.Workspace)/published-artifacts'
+                environmentServiceName: 'azuredevops-azureRM-svc'
+                commandOptions: '-var ssh_public_key=$(sshkey.secureFilePath) -out $(Pipeline.Workspace)/terraform-manifests-out/$(DEV_ENVIRONMENT)-$(Build.BuildId).out -var environment=$(DEV_ENVIRONMENT)'
+                allowTelemetryCollection: false
+            - task: TerraformCLI@0
+              inputs:
+                command: 'apply'
+                workingDirectory: '$(Pipeline.Workspace)/published-artifacts'
+                environmentServiceName: 'azuredevops-azureRM-svc'
+                commandOptions: '$(Pipeline.Workspace)/terraform-manifests-out/$(DEV_ENVIRONMENT)-$(Build.BuildId).out'
+                allowTelemetryCollection: false
+            
