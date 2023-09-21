@@ -31,7 +31,7 @@ stages:
              command: 'init'
              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-manifests'
              backendType: 'azurerm'
-             backendServiceArm: 'terraform-aks-azurerm-svc-con'
+             backendServiceArm: 'azuredevops-azureRM-svc'
              backendAzureRmResourceGroupName: 'aks-rg-sa'
              backendAzureRmStorageAccountName: 'terraformstatefileaccoun'
              backendAzureRmContainerName: 'tfstate'
