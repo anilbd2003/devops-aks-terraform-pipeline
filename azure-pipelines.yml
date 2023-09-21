@@ -1,0 +1,45 @@
+trigger:
+  - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+# Define Variables
+variables:
+- name: DEV_ENVIRONMENT
+  value: dev 
+- name: QA_ENVIRONMENT
+  value: qa
+
+stages:
+  - stage: terraformValidate
+    jobs:
+      - job: terraformValidate
+        continueOnError: true
+        steps:
+         - task: PublishPipelineArtifact@1
+           inputs:
+             targetPath: '$(System.DefaultWorkingDirectory)/terraform-manifests'
+             artifact: 'published-artifacts'
+             publishLocation: 'pipeline'
+        
+         - task: TerraformInstaller@0
+           inputs:
+             terraformVersion: 'latest'
+         - task: TerraformCLI@0
+           inputs:
+             command: 'init'
+             workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-manifests'
+             backendType: 'azurerm'
+             backendServiceArm: 'terraform-aks-azurerm-svc-con'
+             backendAzureRmResourceGroupName: 'aks-rg-sa'
+             backendAzureRmStorageAccountName: 'terraformstatefileaccoun'
+             backendAzureRmContainerName: 'tfstate'
+             backendAzureRmKey: 'aks-test.tfstate'
+             allowTelemetryCollection: false
+         - task: TerraformCLI@0
+           inputs:
+             command: 'validate'
+             workingDirectory: '(System.DefaultWorkingDirectory)/terraform-manifests'
+             allowTelemetryCollection: false
+
