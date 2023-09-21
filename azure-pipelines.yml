@@ -80,6 +80,6 @@ stages:
                 command: 'apply'
                 workingDirectory: '$(Pipeline.Workspace)/published-artifacts'
                 environmentServiceName: 'azuredevops-azureRM-svc'
-                commandOptions: '$(Pipeline.Workspace)published-artifacts/$(DEV_ENVIRONMENT)-$(Build.BuildId).out'
+                commandOptions: '$(Pipeline.Workspace)/published-artifacts/$(DEV_ENVIRONMENT)-$(Build.BuildId).out'
                 allowTelemetryCollection: false
             
